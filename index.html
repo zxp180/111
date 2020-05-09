@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/view-design/dist/styles/iview.css" />
+    <link rel="stylesheet" href="./dist/index.css" />
+    <!-- <script type="text/javascript" src="https://vuejs.org/js/vue.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/view-design/dist/iview.min.js"></script>
+    <title>公司查询</title>
+</head>
+
+<body style="background: rgb(69, 90, 100); color: rgb(255, 255, 255);">
+    <div class="parallax">
+        <div id="stars1"></div>
+        <div id="stars2"></div>
+        <div id="stars3"></div>
+    </div>
+    <a class="github-fork-ribbon right-top" href="https://github.com/zxpsuper/IT-blacklist"
+        title="Fork me on GitHub">Fork me on
+        GitHub</a>
+    <div id="app">
+        <div class="text-center">
+            <h1 style="margin-bottom: 20px;">公司查询</h1>
+            <p class="tips">TIPS: 查询是否为996, 外包或培训机构等</p>
+            <div>
+                <i-input v-model="value" placeholder="输入公司名称吧..." class="search-input"></i-input>
+                <div style="margin-top: 20px;">
+                    <i-button type="primary" @click="add">我要补充</i-button>
+                </div>
+            </div>
+            <div class="list-wrapper">
+                <div v-if="list.length">
+
+                    <div v-for="item in list" class="company-item">
+                        <span v-for="char in item.name" :class="{'red-char': redChar(char)}">{{char}}</span>
+                        <div>
+                            <Tag color="warning" v-for="label in item.label">{{label}}</Tag>
+                            <Tag color="primary" v-if="item.descript">{{item.descript}}</Tag>
+                        </div>
+                    </div>
+                </div>
+                <div v-else>暂无数据</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                value: '',
+                listAll: {},
+            },
+            computed: {
+                list() {
+                    if (!this.value) return []
+                    let arr = []
+
+                    for (let key in this.listAll) {
+                        if (key.includes(this.value)) {
+
+                            arr.push(this.listAll[key])
+                        }
+                    }
+                    return arr
+                }
+            },
+            created() {
+                fetch('./dist/company-all.json').then(response => response.json())
+                    .then(data => {
+                        this.listAll = data
+                    })
+            },
+            methods: {
+                checkOutsourcing() {
+                    this.type = 1
+                },
+                checkTrain() {
+                    this.type = 2
+                },
+                redChar(char) {
+                    return this.value.includes(char)
+                },
+                add() {
+                    window.open('https://github.com/zxpsuper/IT-blacklist/issues')
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>
